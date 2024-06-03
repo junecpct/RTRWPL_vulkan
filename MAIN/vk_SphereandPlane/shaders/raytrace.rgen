@@ -1,0 +1,153 @@
+/*
+ * Copyright (c) 2019-2021, NVIDIA CORPORATION.  All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-FileCopyrightText: Copyright (c) 2019-2021 NVIDIA CORPORATION
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#version 460
+#extension GL_EXT_ray_tracing : require
+#extension GL_GOOGLE_include_directive : enable
+#extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
+
+
+#include "raycommon.glsl"
+#include "wavefront.glsl"
+
+#extension GL_EXT_debug_printf : enable
+
+
+// clang-format off
+layout(location = 0) rayPayloadEXT hitPayload prd;
+
+layout(set = 0, binding = eTlas) uniform accelerationStructureEXT topLevelAS;
+layout(set = 0, binding = eOutImage, rgba32f) uniform image2D image;
+layout(set = 1, binding = eGlobals) uniform _GlobalUniforms { GlobalUniforms uni; };
+layout(push_constant) uniform _PushConstantRay { PushConstantRay pcRay; };
+// clang-format on
+
+
+// for ray sphere
+void main()
+{
+  vec3 center = vec3(0.0f, -1.0f, 0.0f);     // ray generation point
+
+  uint globalRayCounter = pcRay.globalRayCounter;
+  uint raysThisIteration = pcRay.raysThisIteration;
+
+  prd.ray_id = globalRayCounter + uint(gl_LaunchIDEXT.x) + uint(gl_LaunchSizeEXT.x) * uint(gl_LaunchIDEXT.y);
+  
+  if (prd.ray_id >= (globalRayCounter + raysThisIteration)) {
+    return;
+  }
+  else {
+
+    //debugPrintfEXT("counter: %d, ray id: %d, gl_LaunchID: (%d, %d)\n", globalRayCounter, prd.ray_id, gl_LaunchIDEXT.x, gl_LaunchIDEXT.y);
+
+    vec2 launchID = vec2(float(prd.ray_id % pcRay.totalWidth),
+                        float((prd.ray_id - (prd.ray_id % pcRay.totalWidth)) / pcRay.totalWidth)
+                        );
+    vec2 launchSize = vec2(float(pcRay.totalWidth), float(pcRay.totalHeight));
+
+    //debugPrintfEXT("ray id: %d, launchID: (%d, %d)\n", prd.ray_id, gl_LaunchIDEXT.x, gl_LaunchIDEXT.y);
+    //debugPrintfEXT("ray id: %d, launchID: (%f, %f)\n", prd.ray_id, launchID.x, launchID.y);
+
+    const vec2 pixelCenter = launchID + vec2(0.5);
+    const vec2 inUV        = pixelCenter / launchSize;
+    vec2       d           = inUV * 2.0 - 1.0;
+
+    // Calculate spherical coordinates
+    float theta = float( launchID.x ) / float( launchSize.x );
+    float phi = float( launchID.y ) / float( launchSize.y );
+
+    //debugPrintfEXT("theta: %f, phi = %f\n", theta, phi);
+
+    float azi = 2.0f * M_PIf * phi;    // azimuthal angle
+    float pol = M_PIf * theta;         // polar angle
+
+    // Convert spherical coordinates to Cartesian coordinates
+    vec3 sphericalDirection = vec3(sin(pol)*cos(azi), sin(pol)*sin(azi), cos(pol));
+
+    uint  rayFlags = gl_RayFlagsOpaqueEXT;
+    float tMin     = 1e-10f;
+    float tMax     = 20000.0f;
+
+    prd.tpath = 0.0f;
+    prd.ref_idx = 0.0f;
+    prd.receive = 0.0f;
+    prd.recursionDepth = 0;
+  
+    //debugPrintfEXT("ray id: %d, launchID: (%f, %f)\n", prd.ray_id, launchID.x, launchID.y);
+
+    //debugPrintfEXT("ray id: %d, ray_direction: (%f, %f, %f)\n", prd.ray_id, sphericalDirection.x, sphericalDirection.y, sphericalDirection.z);
+
+    traceRayEXT(topLevelAS,     // acceleration structure
+                rayFlags,       // rayFlags
+                0xFF,           // cullMask
+                0,              // sbtRecordOffset
+                0,              // sbtRecordStride
+                0,              // missIndex
+                center,         // ray origin
+                tMin,           // ray min range
+                sphericalDirection,  // ray direction
+                tMax,           // ray max range
+                0               // payload (location = 0)
+    );
+  }
+}
+
+/*
+// for normal camera
+void main()
+{
+  vec2 launchID = vec2(gl_LaunchIDEXT.xy);
+  vec2 launchSize = vec2(pcRay.totalWidthy);
+  
+  const vec2 pixelCenter = vec2(gl_LaunchIDEXT.xy) + vec2(0.5);
+  const vec2 inUV        = pixelCenter / vec2(pcRay.totalWidthy);
+  vec2       d           = inUV * 2.0 - 1.0;
+
+  vec4 origin    = uni.viewInverse * vec4(0, 0, 0, 1);
+  vec4 target    = uni.projInverse * vec4(d.x, d.y, 1, 1);
+  vec4 direction = uni.viewInverse * vec4(normalize(target.xyz), 0);
+
+  uint  rayFlags = gl_RayFlagsOpaqueEXT;
+  float tMin     = 0.001;
+  float tMax     = 10000.0;
+
+  traceRayEXT(topLevelAS,     // acceleration structure
+              rayFlags,       // rayFlags
+              0xFF,           // cullMask
+              0,              // sbtRecordOffset
+              0,              // sbtRecordStride
+              0,              // missIndex
+              origin.xyz,     // ray origin
+              tMin,           // ray min range
+              direction.xyz,  // ray direction
+              tMax,           // ray max range
+              0               // payload (location = 0)
+  );
+
+  prd.ray_id = uint(launchID.x) + uint(launchSize.x) * uint(launchID.y);
+  prd.tpath = 0.0f;
+  prd.ref_idx = 0.0f;
+  prd.receive = 0.0f;
+  prd.recursionDepth = 0;
+
+  debugPrintfEXT("ray ID = %d, launchID = %f, %f, launchSize = %f, %f\n", 
+                  prd.ray_id, launchID.x, launchID.y, launchSize.x, launchSize.y);
+}
+*/
+

@@ -8,5 +8,5 @@
 
 Program | Details
 ---------|--------
-vk_SphereandPlane | ![small](MAIN/vk_SphereandPlane/images/sphereandplane.jpg) | [SphereandPlane](MAIN/vk_SphereandPlane)<br>Implements transparent materials by adding a new shader to th
+vk_SphereandPlane | <img src="[https://github.com/favicon.ico](https://github.com/junecpct/RT_vulkan/blob/main/MAIN/vk_SphereandPlane/images/sphereandplane.jpg)" width="48"> | [SphereandPlane](MAIN/vk_SphereandPlane)<br>Implements transparent materials by adding a new shader to th
 vk_ItoCampus |

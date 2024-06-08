@@ -168,10 +168,10 @@ public:
 
 
 // width & height of total rays generated
-#define SAMPLE_WIDTH  10000
-#define SAMPLE_HEIGHT 5000
+#define SAMPLE_WIDTH  20000
+#define SAMPLE_HEIGHT 10000
 
 // width & height of rays per frame(iteration). 
 // FRAME_WIDTH must be bigger than 120 due to GLFW window properties
 #define FRAME_WIDTH   1000
-#define FRAME_HEIGHT  500
+#define FRAME_HEIGHT  1000

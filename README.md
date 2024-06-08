@@ -5,6 +5,11 @@
 ## Setup
 - Vulkan Ray Tracing Tutorialの[Setup](https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/docs/setup.md)と同一です.
   - [nvpro-samples](https://github.com/nvpro-samples/build_all)
+ 
+出力された結果を見るためには,
+- 
+- Vulkan ConfiguratorのValidation Settings → VK_LAYER_KHRONOS_validation → Validation Areas → GPU BaseをDebug Printfに変更し, Redirect Printf messages to stdoutにチェックを入れる必要があります.
+- Vulkan Configuratorを閉じた後も設定が有効になるよう, Continue Overriding Layers on Exitにもチェックを入れることをおすすめしあす.
 
 Program | Details
 ---------|--------

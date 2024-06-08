@@ -5,12 +5,19 @@
 ## Setup
 - Vulkan Ray Tracing Tutorialの[Setup](https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR/blob/master/docs/setup.md)と同一です.
   - [nvpro-samples](https://github.com/nvpro-samples/build_all)
- 
-出力された結果を見るためには,
-- 
-- Vulkan ConfiguratorのValidation Settings → VK_LAYER_KHRONOS_validation → Validation Areas → GPU BaseをDebug Printfに変更し, Redirect Printf messages to stdoutにチェックを入れる必要があります.
-- Vulkan Configuratorを閉じた後も設定が有効になるよう, Continue Overriding Layers on Exitにもチェックを入れることをおすすめしあす.
 
+<br>
+出力された結果を見るためには, 
+  - Vulkan ConfiguratorのValidation Settings → VK_LAYER_KHRONOS_validation → Validation Areas → GPU BaseをDebug Printfに変更し, Redirect Printf messages to stdoutにチェックを入れる必要があります.
+  - Vulkan Configuratorを閉じた後も設定が有効になるよう, Continue Overriding Layers on Exitにもチェックを入れることをおすすめします.
+
+
+### Parameters
+
+
+### Input / Output Example
+
+### Program list
 Program | Details
 ---------|--------
 <img src="https://github.com/junecpct/RT_vulkan/blob/main/MAIN/vk_SphereandPlane/images/sphereandplane.jpg" width="400"> | [SphereandPlane](MAIN/vk_SphereandPlane)<br> - レイ投射点：赤 (0.0, -1.0, 0.0)<br> - 受信球：緑 (0.0, 1.0, 0.0)<br><br>objファイルによって形成された球体と平面でできた問題空間にして, 電波の伝搬損失計算を適用したプログラムです.

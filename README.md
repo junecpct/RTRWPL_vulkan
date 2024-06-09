@@ -1,5 +1,6 @@
 # RT_vulkan
 - VulkanのRay Tracing Extensionとレイトレーシングハードウェア(ex. NVIDIA製GPUのRT core, AMD製GPUのRay Acceleratorなど)を使用し, 簡単な電波の伝搬損失計算を行うプログラムです.
+- アルゴリズムとしては, 送信点から発射したレイが受信エリアに到達したとき受信電力を計算する, SBR法を採択しています.<br><img src="https://github.com/junecpct/RT_vulkan/blob/main/MAIN/vk_SphereandPlane/images/sphereandplane.jpg" width="800">
 - 本プログラムはNVIDIA社の[Vulkan Ray Tracing Tutorial](https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR)をベースにして作成しました.
 
 ## Setup

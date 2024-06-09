@@ -1,6 +1,6 @@
 # RT_vulkan
 - VulkanのRay Tracing Extensionとレイトレーシングハードウェア(ex. NVIDIA製GPUのRT core, AMD製GPUのRay Acceleratorなど)を使用し, 簡単な電波の伝搬損失計算を行うプログラムです.
-- アルゴリズムとしては, 送信点から発射したレイが受信エリアに到達したとき受信電力を計算する, SBR法を採択しています.<br><img src="https://github.com/junecpct/RT_vulkan/blob/main/MAIN/vk_SphereandPlane/images/sphereandplane.jpg" width="800">
+- アルゴリズムとしては, 送信点から発射したレイが受信エリアに到達したとき受信電力を計算する, SBR法を採択しています.<br><img src="https://github.com/junecpct/RT_vulkan/blob/main/image/sbr.png" width="800">
 - 本プログラムはNVIDIA社の[Vulkan Ray Tracing Tutorial](https://github.com/nvpro-samples/vk_raytracing_tutorial_KHR)をベースにして作成しました.
 
 ## Setup
@@ -12,9 +12,14 @@
 - Vulkan ConfiguratorのValidation Settings → VK_LAYER_KHRONOS_validation → Validation Areas → GPU BaseをDebug Printfに変更し, Redirect Printf messages to stdoutにチェックを入れる必要があります.
 - Vulkan Configuratorを閉じた後も設定が有効になるよう, Continue Overriding Layers on Exitにもチェックを入れることをおすすめします.
 
-
 ### Parameters
-
+- hello_vulkan.h
+  - `SAMPLE_WIDTH`H & `SAMPLE_HEIGHT`
+    - `SAMPLE_WIDTH`×`SAMPLE_HEIGHT`個のレイを投射します.
+    - 球面座標系を用いてレイを垂直・水平方向に投射しているため, 全方向に等間隔で投射するためには<br>`SAMPLE_WIDTH` : `SAMPLE_HEIGHT` = 2 : 1 にする必要があります.
+  - `FRAME_WIDTH` & `FRAME_HEIGHT`
+    - プログラムのウインドウがディスプレイより大きい場合, ディスプレイに映っていない部分は計算されないため, もっと小さい単位でフレームごとにレイを投射します.
+    - プログラムのウインドウサイズを決める変数でもあります. GLFWの都合上, `FRAME_WIDTH`は120より大きくする必要があります.
 
 
 ### Input / Output Example

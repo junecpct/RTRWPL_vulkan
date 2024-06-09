@@ -22,7 +22,8 @@
     - プログラムのウインドウサイズを決める変数でもあります. GLFWの都合上, `FRAME_WIDTH`は120より大きくする必要があります.
 - shaders/triangle.rchit
   - `MAX_RECURSION_DEPTH`
-    - レイの最大反射回数です. 問題設定とGPUの`maxrecursionDepth`を考慮して設定する必要があります.
+    - レイの最大反射回数です.
+    - 問題設定とGPUの`maxrecursionDepth`を考慮して設定する必要があります.
 
 ### Parameter / Output Example
 ```

@@ -26,7 +26,7 @@
 
 ### Parameter / Output Example
 ```
-// SAMPLE_WIDTH = 20000, SAPMLE_HEIGHT = 10000
+// SAMPLE_WIDTH = 20000, SAPMLE_HEIGHT = 10000, MAX_RECURSION_DEPTH = 22
 _______________
 Vulkan Version:
  - available:  1.3.268
